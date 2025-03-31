@@ -12,6 +12,7 @@ from PyQt5.QtCore import(
 )
 from pathlib import Path
 import os
+import pdb
 
 class ResizablePixmapItem(QGraphicsPixmapItem):
     HANDLE_SIZE = 10  # Size of the resize handle square in pixels
@@ -189,6 +190,10 @@ class BoardView(QGraphicsView):
                 if isinstance(item, ResizablePixmapItem): # Checks is the element is instance of (always is)
                     item.start_pixmap_size = item.original_pixmap.size()
                     item.refreshSize()
+            else:
+                super().keyPressEvent(event)
+        elif event.key() == Qt.Key.Key_T:
+            toggleTop(window)
         else:
             super().keyPressEvent(event)
 
@@ -199,6 +204,16 @@ class MainWindow(QMainWindow):
         self.board_view = BoardView()
         self.setCentralWidget(self.board_view)
         self.resize(1920, 1080)
+    
+# * General Use functions
+def toggleTop(window):
+    flags = window.windowFlags()
+    if flags & Qt.WindowStaysOnTopHint: # That checks if the opperator is present (&)
+        window.setWindowFlags(flags & ~Qt.WindowStaysOnTopHint) # That keeps all other flags and remove that one (AND NOT)
+    else:
+        window.setWindowFlags(flags | Qt.WindowStaysOnTopHint) # Add the operator (OR)
+    window.show()
+
 
 if __name__ == '__main__':
     appdata_path = Path(os.environ['APPDATA'])
