@@ -1,0 +1,1 @@
+A image board system made to streamline art creation. Import or paste images and move them around in a dedicated window.
