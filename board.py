@@ -176,6 +176,13 @@ class BoardView(QGraphicsView):
                 self.scene().addItem(item)
             else:
                 super().keyPressEvent(event)
+        
+        # * Handle select All (Ctrl + A)
+        elif event.key() == Qt.Key_A and event.modifiers() == Qt.ControlModifier:
+            # Select every item thingie! :3
+            for item in self.scene().items():
+                if isinstance(item, QGraphicsPixmapItem):
+                    item.setSelected(True)
 
         # * Delete key removes selected items.
         elif event.key() == Qt.Key_Delete:

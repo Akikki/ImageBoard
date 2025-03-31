@@ -17,6 +17,7 @@ A image board system made to streamline art creation. Import or paste images and
 | Shortcut           | Action                            |
 |--------------------|-----------------------------------|
 | `Ctrl + V`         | Paste image from browser          |
+| `Ctrl + A`         | Select all objects                |
 | `R`                | Return Image to default state     |
 | `Del`              | Delete selected image             |
 ---
