@@ -11,7 +11,7 @@ from PyQt5.QtCore import(
      Qt, QPointF, QRectF
 )
 from pathlib import Path
-
+import os
 
 class ResizablePixmapItem(QGraphicsPixmapItem):
     HANDLE_SIZE = 10  # Size of the resize handle square in pixels
@@ -107,6 +107,17 @@ class ResizablePixmapItem(QGraphicsPixmapItem):
         else:
             super().mouseReleaseEvent(event)
 
+    def refreshSize(self):
+        self.resizing = True
+        new_pixmap = self.original_pixmap.scaled(
+            self.start_pixmap_size.width(),
+            self.start_pixmap_size.height(),
+            Qt.IgnoreAspectRatio,
+            Qt.SmoothTransformation
+    )
+        self.setPixmap(new_pixmap)
+        self.resizing = False
+
 
 class BoardView(QGraphicsView):
     def __init__(self):
@@ -138,7 +149,7 @@ class BoardView(QGraphicsView):
         event.acceptProposedAction()
 
     def keyPressEvent(self, event: QKeyEvent):
-        # Handle copy (Ctrl+C)
+        # * Handle copy (Ctrl+C)
         if event.matches(QKeySequence.Copy):
             selected_items = self.scene().selectedItems()
             if selected_items:
@@ -150,7 +161,7 @@ class BoardView(QGraphicsView):
             else:
                 super().keyPressEvent(event)
 
-        # Handle paste (Ctrl+V)
+        # * Handle paste (Ctrl+V)
         elif event.matches(QKeySequence.Paste):
             clipboard = QApplication.clipboard()
             # Ensure the clipboard contains an image.
@@ -165,10 +176,19 @@ class BoardView(QGraphicsView):
             else:
                 super().keyPressEvent(event)
 
-        # Delete key removes selected items.
+        # * Delete key removes selected items.
         elif event.key() == Qt.Key_Delete:
             for item in self.scene().selectedItems():
                 self.scene().removeItem(item)
+            else:
+                super().keyPressEvent(event)
+
+        # * Return element to original size (R)
+        elif event.key() == Qt.Key.Key_R:
+            for item in self.scene().selectedItems():
+                if isinstance(item, ResizablePixmapItem): # Checks is the element is instance of (always is)
+                    item.start_pixmap_size = item.original_pixmap.size()
+                    item.refreshSize()
         else:
             super().keyPressEvent(event)
 
@@ -178,9 +198,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Image Board")
         self.board_view = BoardView()
         self.setCentralWidget(self.board_view)
-        self.resize(800, 600)
+        self.resize(1920, 1080)
 
 if __name__ == '__main__':
+    appdata_path = Path(os.environ['APPDATA'])
+    print("AppData (Roaming):", appdata_path)
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
