@@ -26,7 +26,7 @@ A image board system made to streamline art creation. Import or paste images and
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
+   git clone https://github.com/Akikki/ImageBoard
    cd your-repo
-2. (Windows) Use the .exe build in ```./dist```
+2. (Windows) Use the .exe build in ```./dist``` (or build to make sure it's up to date)
 2. (Other) Build from source using your prefered compiler / run the python script ```board.py```
