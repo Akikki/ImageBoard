@@ -12,7 +12,6 @@ from PyQt5.QtCore import(
 )
 from pathlib import Path
 import os
-import pdb
 
 class ResizablePixmapItem(QGraphicsPixmapItem):
     HANDLE_SIZE = 10  # Size of the resize handle square in pixels
@@ -24,11 +23,16 @@ class ResizablePixmapItem(QGraphicsPixmapItem):
             QGraphicsPixmapItem.ItemIsMovable |
             QGraphicsPixmapItem.ItemIsSelectable
         )
+        # Changes the center of the object for the rotate transform
+        center = self.boundingRect().center()
+        self.setTransformOriginPoint(center)
+
         # Store the original pixmap for quality when scaling.
         self.original_pixmap = pixmap
         self.resizing = False
         self.resize_start_pos = QPointF()
         self.start_pixmap_size = pixmap.size()
+        self.current_rotation = 0.0
 
     def shape(self):
         path = QPainterPath()
@@ -116,8 +120,27 @@ class ResizablePixmapItem(QGraphicsPixmapItem):
             Qt.IgnoreAspectRatio,
             Qt.SmoothTransformation
     )
+        self.setRotation(0.0)
         self.setPixmap(new_pixmap)
         self.resizing = False
+
+        transform = self.transform()
+        transform.scale(1,1)
+        self.setTransform()
+
+    def changeRotation(self, angle: float):
+        self.current_rotation += angle
+        self.setRotation(self.current_rotation)
+
+    def mirrorHorizontal(self):
+        transform = self.transform()
+        transform.scale(-1, transform.dy)
+        self.setTransform(transform)
+
+    def mirrorVertical(self):
+        transform = self.transform()
+        transform.scale(transform.dx, -1)
+        self.setTransform(transform)
 
 
 class BoardView(QGraphicsView):
@@ -191,8 +214,32 @@ class BoardView(QGraphicsView):
             else:
                 super().keyPressEvent(event)
 
-        # * Return element to original size (R)
+        # * Rotate element (R)        
         elif event.key() == Qt.Key.Key_R:
+            for item in self.scene().selectedItems():
+                if isinstance(item, ResizablePixmapItem):
+                    item.changeRotation(90.0)
+                else:
+                    super().keyPressEven(event)
+
+        # * Mirror vertical (V)        
+        elif event.key() == Qt.Key.Key_V:
+            for item in self.scene().selectedItems():
+                if isinstance(item, ResizablePixmapItem):
+                    item.mirrorVertical()
+                else:
+                    super().keyPressEven(event)
+
+        # * Mirror horizontal (H)        
+        elif event.key() == Qt.Key.Key_H:
+            for item in self.scene().selectedItems():
+                if isinstance(item, ResizablePixmapItem):
+                    item.mirrorHorizontal()
+                else:
+                    super().keyPressEven(event)
+
+        # * Return element to original size (X)
+        elif event.key() == Qt.Key.Key_X:
             for item in self.scene().selectedItems():
                 if isinstance(item, ResizablePixmapItem): # Checks is the element is instance of (always is)
                     item.start_pixmap_size = item.original_pixmap.size()

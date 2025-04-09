@@ -18,7 +18,10 @@ A image board system made to streamline art creation. Import or paste images and
 |--------------------|-----------------------------------|
 | `Ctrl + V`         | Paste image from browser          |
 | `Ctrl + A`         | Select all objects                |
-| `R`                | Return Image to default state     |
+| `X`                | Return Image to default state     |
+| `R`                | Rotate Image by 90 degrees        |
+| `H`                | Flip Image horizontaly            |
+| `V`                | Flip Image vertically             |
 | `Del`              | Delete selected image             |
 ---
 

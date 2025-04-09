@@ -1,0 +1,2 @@
+
+class ResizablePixmapItem(QGraphicsPixmapItem):
