@@ -133,13 +133,33 @@ class ResizablePixmapItem(QGraphicsPixmapItem):
         self.setRotation(self.current_rotation)
 
     def mirrorHorizontal(self):
+        rect = self.boundingRect()
+        center = rect.center()
+        
         transform = self.transform()
-        transform.scale(-1, transform.dy)
+        m11 = transform.m11()
+        m22 = transform.m22()
+
+        new_m11 = -m11
+        # Flip horizontally and move it to stay centered
+        transform.translate(2 * center.x(), 0)  # compensate mirror
+        transform.scale(-1, 1)
+
         self.setTransform(transform)
 
     def mirrorVertical(self):
+        rect = self.boundingRect()
+        center = rect.center()
+
         transform = self.transform()
-        transform.scale(transform.dx, -1)
+        m11 = transform.m11()
+        m22 = transform.m22()
+
+        new_m22 = -m22
+
+        transform.translate(0, 2 * center.y())
+        transform.scale(1, -1)
+
         self.setTransform(transform)
 
 
